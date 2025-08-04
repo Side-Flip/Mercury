@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://dcyj00njqrh60"]
+[gd_scene load_steps=37 format=3 uid="uid://dcyj00njqrh60"]
 
 [ext_resource type="Script" uid="uid://djf6tlv6dfd75" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://p4hqsfpbikgv" path="res://Sprites/Dude/Idle.png" id="2_cvnsp"]
@@ -12,8 +12,53 @@
 [ext_resource type="Script" uid="uid://c23j5k8t18cws" path="res://Scripts/player_control/player_states/player_state_dashing.gd" id="10_tx1dd"]
 [ext_resource type="Script" uid="uid://8eapo6q0snux" path="res://Scripts/player_control/player_states/player_state_wall_sliding.gd" id="11_gymyn"]
 
+[sub_resource type="Shader" id="Shader_gymyn"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.4.1.stable's CanvasItemMaterial.
+
+shader_type canvas_item;
+render_mode blend_mix;
+uniform int particles_anim_h_frames;
+uniform int particles_anim_v_frames;
+uniform bool particles_anim_loop;
+
+void vertex() {
+	float h_frames = float(particles_anim_h_frames);
+	float v_frames = float(particles_anim_v_frames);
+	VERTEX.xy /= vec2(h_frames, v_frames);
+	float particle_total_frames = float(particles_anim_h_frames * particles_anim_v_frames);
+	float particle_frame = floor(INSTANCE_CUSTOM.z * float(particle_total_frames));
+	if (!particles_anim_loop) {
+		particle_frame = clamp(particle_frame, 0.0, particle_total_frames - 1.0);
+	} else {
+		particle_frame = mod(particle_frame, particle_total_frames);
+	}	UV /= vec2(h_frames, v_frames);
+	UV += vec2(mod(particle_frame, h_frames) / h_frames, floor((particle_frame + 0.5) / h_frames) / v_frames);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pu2lt"]
+shader = SubResource("Shader_gymyn")
+shader_parameter/particles_anim_h_frames = 5
+shader_parameter/particles_anim_v_frames = 1
+shader_parameter/particles_anim_loop = false
+
+[sub_resource type="Curve" id="Curve_ukyrk"]
+_data = [Vector2(0, 0.494279), 0.0, 0.0, 0, 0, Vector2(0.997101, 0.0108695), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_7dp3o"]
+curve = SubResource("Curve_ukyrk")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_h4iuc"]
+gravity = Vector3(0, 0, 0)
+scale_min = 8.0
+scale_max = 8.0
+alpha_curve = SubResource("CurveTexture_7dp3o")
+anim_speed_min = 1.0
+anim_speed_max = 1.0
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gymyn"]
-size = Vector2(16, 42)
+size = Vector2(14.5, 41)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_l6n3p"]
 atlas = ExtResource("3_vgqql")
@@ -164,19 +209,29 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_cvnsp")
 speed = 600.0
 acceleration = 0.5
-jump_force = -1000
+jump_force = -1100
+
+[node name="DashParticles" type="GPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_pu2lt")
+emitting = false
+texture = ExtResource("3_vgqql")
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_h4iuc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, 5)
+top_level = true
+position = Vector2(-1.75, 5.5)
 shape = SubResource("RectangleShape2D_gymyn")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3smsa")
-animation = &"idle"
+animation = &"jump"
+frame = 4
+frame_progress = 1.0
 
 [node name="JumpBufferTimer" type="Timer" parent="."]
 wait_time = 0.1
@@ -187,7 +242,7 @@ wait_time = 0.5
 one_shot = true
 
 [node name="CoyoteTimer" type="Timer" parent="."]
-wait_time = 0.2
+wait_time = 0.1
 one_shot = true
 
 [node name="StateMachine" parent="." node_paths=PackedStringArray("default_state") instance=ExtResource("5_fkybt")]

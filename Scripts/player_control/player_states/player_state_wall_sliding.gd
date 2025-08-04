@@ -20,8 +20,8 @@ func on_physics_process(delta):
 		player.velocity.x = -direction * player.wall_jump_pushback
 		state_machine._change_to("PlayerStateJumping")
 		
-	elif Input.is_action_just_pressed("dash"):
+	elif Input.is_action_just_pressed("dash") and player.can_dash:
 		state_machine._change_to("PlayerStateDashing")
 			
-	elif player.is_on_wall():
+	elif not player.is_on_wall():
 		state_machine._change_to("PlayerStateFalling")

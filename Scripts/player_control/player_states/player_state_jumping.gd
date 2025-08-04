@@ -16,9 +16,9 @@ func on_physics_process(delta):
 	
 	if player.velocity.y > 0: state_machine._change_to("PlayerStateFalling")
 
-	if player.is_on_wall():
+	if player.is_on_wall() and player.can_wall_slide:
 		state_machine._change_to("PlayerStateWallSliding")
 	
 func on_input(_event):
-	if Input.is_action_pressed("dash") and player.can_dash:
+	if Input.is_action_just_pressed("dash") and player.can_dash:
 		state_machine._change_to("PlayerStateDashing")

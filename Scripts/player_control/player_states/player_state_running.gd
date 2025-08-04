@@ -1,8 +1,8 @@
 extends PlayerStateGravityBase
 
 func start():
-	player.reset_double_jump()
-	player.can_dash = true
+	if player.can_double_jump:
+		player.reset_double_jump()
 
 func on_physics_process(delta):
 	player.animated_sprite.play("walk")
@@ -20,11 +20,11 @@ func on_physics_process(delta):
 	handle_gravity(delta)	
 	player.move_and_slide()
 	
-
-func on_input(_event):
 	if not Input.is_action_pressed("move_left") and not Input.is_action_pressed("move_right"):
 		state_machine._change_to("PlayerStateIdle")
+
+func on_input(_event):
 	if Input.is_action_just_pressed("jump"):
 		state_machine._change_to("PlayerStateJumping")
-	if Input.is_action_pressed("dash") and player.can_dash:
+	if Input.is_action_just_pressed("dash") and player.can_dash:
 		state_machine._change_to("PlayerStateDashing")

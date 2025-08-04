@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://b08f2hsjluv02"]
+
+[ext_resource type="Script" uid="uid://cwx7hosaaqkv2" path="res://Scripts/unlocker.gd" id="1_lalik"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v8j1t"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bg6hk"]
+size = Vector2(15, 15)
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_lalik")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_v8j1t")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("PlaceholderTexture2D_bg6hk")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

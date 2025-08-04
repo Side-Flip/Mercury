@@ -9,39 +9,31 @@ class_name Player
 @export var dash_curve : Curve
 @export var wall_jump_pushback = 600
 @export var wall_slide_gravity = 1000
+@export var can_double_jump = false
+@export var can_dash = false
+@export var can_wall_slide = false
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
 @onready var coyote_timer: Timer = $CoyoteTimer
 @onready var dash_cooldown: Timer = $DashCooldown
-@onready var wall_ray_left: RayCast2D = $WallRayLeft
-@onready var wall_ray_right: RayCast2D = $WallRayRight
 
-#My own function to check walls because is_on_wall() is buggy
-func is_touching_wall() -> int:
-	if wall_ray_left.is_colliding():
-		return -1
-	elif wall_ray_right.is_colliding():
-		return 1
-	return 0
 
-##Unlockables
-var double_jump = true
-var can_dash = true
-var can_wall_slide = true
+var double_jump_available = true
+var dash_available = true
 
 var can_coyote_jump = false
 var jump_buffer = false
 
 func start_dash_cooldown():
-	can_dash = false
+	dash_available = false
 	dash_cooldown.start()
 
 func use_double_jump():
-	double_jump = false
+	double_jump_available = false
 
 func reset_double_jump():
-	double_jump = true
+	double_jump_available = true
 
 func buffer_jump():
 	if not jump_buffer:
@@ -59,20 +51,8 @@ func _on_coyote_timer_timeout() -> void:
 	can_coyote_jump = false
 
 func _on_dash_cooldown_timeout():
-	can_dash = true
+	dash_available = true
 
-func h_movement(direction, delta):
-	"""
-	##Wall sliding
-	if is_on_wall() and not is_on_floor():
-		if direction:
-			is_wall_sliding = true
-	else:
-		is_wall_sliding = false
-	if is_wall_sliding:
-		velocity.y += (wall_slide_gravity*delta)
-		velocity.y = min(velocity.y, wall_slide_gravity)
-"""
 func _physics_process(delta: float) -> void:
 	var direction := Input.get_axis("move_left", "move_right")
 	

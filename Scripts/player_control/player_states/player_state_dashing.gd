@@ -1,5 +1,7 @@
 extends PlayerStateGravityBase
 
+@onready var dash_particles: GPUParticles2D = $"../../DashParticles"
+
 var dash_start_pos = 0
 var dash_direction = 0
 
@@ -14,24 +16,26 @@ func on_physics_process(delta):
 		player.velocity.x = dash_direction * player.dash_speed * player.dash_curve.sample(current_distance / player.dash_max_distance)
 		player.velocity.y = 0
 		
+		dash_particles.emitting = true
+		dash_particles.scale.x = -1 if dash_direction < 0 else 1
+		
+		#handle_gravity(delta)
+		player.move_and_slide()
+		
 		if player.is_on_wall():
-			state_machine._change_to("PlayerStateWallSliding")
+			if player.can_wall_slide:
+				state_machine._change_to("PlayerStateWallSliding")
+			else: state_machine._change_to("PlayerStateFalling")
 		
-		elif Input.is_action_just_pressed("jump"):
-			if player.is_on_floor():
-				state_machine._change_to("PlayerStateJumping")
-			else:
-				player.buffer_jump()
-				
-	elif not player.is_on_floor():
-		if player.jump_buffer:
-			player.jump_buffer = false
+		elif Input.is_action_just_pressed("jump") and player.can_double_jump:
 			state_machine._change_to("PlayerStateJumping")
-		else: state_machine._change_to("PlayerStateFalling")
+			
+	elif player.is_on_floor():
+		if Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right"):
+			state_machine._change_to("PlayerStateRunning")
+		else: state_machine._change_to("PlayerStateIdle")
 		
-	elif Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right"):
-		state_machine._change_to("PlayerStateRunning")
-	else:
-		state_machine._change_to("PlayerStateIdle")
-	handle_gravity(delta)
-	player.move_and_slide()
+	else: state_machine._change_to("PlayerStateFalling")
+
+func end():
+	dash_particles.emitting = false
