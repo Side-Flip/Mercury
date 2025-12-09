@@ -26,5 +26,7 @@ func on_physics_process(delta):
 func on_input(_event):
 	if Input.is_action_just_pressed("jump"):
 		state_machine._change_to("PlayerStateJumping")
-	if Input.is_action_just_pressed("dash") and player.can_dash:
+	elif Input.is_action_just_pressed("dash") and player.can_dash:
 		state_machine._change_to("PlayerStateDashing")
+	elif Input.is_action_just_pressed("hook"):
+		state_machine._change_to("PlayerStateHooking")

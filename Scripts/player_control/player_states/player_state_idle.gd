@@ -3,6 +3,7 @@ extends PlayerStateGravityBase
 func start():
 	if player.can_double_jump:
 		player.reset_double_jump()
+		player.reset_hook_charges()
 	player.velocity.x = 0
 
 func on_physics_process(delta):
@@ -11,7 +12,6 @@ func on_physics_process(delta):
 	if player.jump_buffer:
 		player.jump_buffer = false
 		state_machine._change_to("PlayerStateJumping")
-		
 	
 	handle_gravity(delta)
 	
@@ -22,6 +22,8 @@ func on_input(_event):
 		state_machine._change_to("PlayerStateRunning")
 	elif Input.is_action_just_pressed("jump"):
 		state_machine._change_to("PlayerStateJumping")
+	elif Input.is_action_just_pressed("hook"):
+		state_machine._change_to("PlayerStateHooking")
 	#Aun no se si permitir que se pueda dashear sin estar pulsando una direccion 
 	"""
 	elif Input.is_action_just_pressed("dash") and player.can_dash:

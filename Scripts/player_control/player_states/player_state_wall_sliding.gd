@@ -2,6 +2,7 @@ extends PlayerStateGravityBase
 
 func start():
 	player.reset_double_jump()
+	player.reset_hook_charges()
 
 func on_physics_process(delta):
 	var direction = Input.get_axis("move_left", "move_right")
@@ -22,6 +23,9 @@ func on_physics_process(delta):
 		
 	elif Input.is_action_just_pressed("dash") and player.can_dash:
 		state_machine._change_to("PlayerStateDashing")
-			
+	
+	elif Input.is_action_just_pressed("hook"):
+		state_machine._change_to("PlayerStateHooking")
+	
 	elif not player.is_on_wall():
 		state_machine._change_to("PlayerStateFalling")

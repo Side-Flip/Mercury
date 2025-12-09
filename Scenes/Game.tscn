@@ -62,12 +62,15 @@ scale = Vector2(5, 5)
 position = Vector2(-36.2, -119.2)
 scale = Vector2(1.53408, 1.53408)
 speed = 1100.0
-jump_force = -1900
+jump_force = -2500
 dash_speed = 1800.0
 dash_max_distance = 100.0
 dash_curve = SubResource("Curve_iukft")
 wall_jump_pushback = 3000
 wall_slide_gravity = 540
+hook_pull_speed = 1800.0
+hook_max_dist = 400.0
+can_dash = true
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-1.4, 4.1)
