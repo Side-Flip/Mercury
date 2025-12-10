@@ -1,29 +1,32 @@
 extends PlayerStateGravityBase
 
 var hook_target_point = Vector2.ZERO
-var arrived_threshold = 20.0
+var arrived_threshold = 10
 
 func start():
 	var mouse_pos = player.get_global_mouse_position()
 	var aim_direction = (mouse_pos - player.global_position).normalized()
 	
-	player.raycast_hook.target_position = aim_direction * player.hook_max_dist
+	var hook_global_point = player.global_position + (aim_direction * player.hook_max_dist)
+	
+	player.raycast_hook.target_position = player.to_local(hook_global_point)
 	player.raycast_hook.force_raycast_update()
 	
 	if player.raycast_hook.is_colliding():
 		hook_target_point = player.raycast_hook.get_collision_point()
 	else:
-		hook_target_point = player.global_position + (aim_direction * player.hook_max_dist)
+		hook_target_point = hook_global_point
 		
 	player.hook_max_charges -= 1
 	
 func on_physics_process(delta):
 	var direction = (hook_target_point - player.global_position).normalized()
 	
-	player.velocity = player.velocity.lerp(direction * player.hook_pull_speed, 0.9)
+	player.velocity = player.velocity.lerp(direction * player.hook_pull_speed, 0.5)
 	player.move_and_slide()
 			
 	var distance = player.global_position.distance_to(hook_target_point)
+	
 	if distance < arrived_threshold:
 		player.velocity *= 0.5
 		state_machine._change_to("PlayerStateFalling")

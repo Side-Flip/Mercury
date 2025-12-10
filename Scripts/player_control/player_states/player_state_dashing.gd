@@ -10,7 +10,7 @@ func start():
 	dash_direction = Input.get_axis("move_left", "move_right")
 	player.start_dash_cooldown()
 
-func on_physics_process(delta):
+func on_physics_process(_delta):
 	var current_distance = abs(player.position.x - dash_start_pos)
 	if not current_distance >= player.dash_max_distance:
 		player.velocity.x = dash_direction * player.dash_speed * player.dash_curve.sample(current_distance / player.dash_max_distance)

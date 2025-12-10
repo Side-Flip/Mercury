@@ -27,6 +27,7 @@ class_name Player
 @onready var raycast_hook: RayCast2D = $RayCastHook
 
 # ------- Available shit -------
+@export_group("Toggleable Settings")
 @export var can_double_jump = false
 @export var can_dash = false
 @export var can_wall_slide = false
